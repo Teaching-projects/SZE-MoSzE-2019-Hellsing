@@ -17,7 +17,7 @@ vector<string> split(string input, char separator) {
 		if (input[i] != separator) {
 			current_word += input[i];
 		}
-		else if (input[i] == separator) { 
+		else if (input[i] == separator) {
 			if (current_word != "") {
 				return_value.push_back(current_word);
 				current_word = "";
@@ -78,8 +78,13 @@ void cd_function(string userinput) {
 	string path_ending = getInputFolderName(userinput);
 	if (path_ending != "") {
 		fs::path p(current_path + path_ending);
-		current_path = current_path + path_ending + "\\";
-		hidden_path = hidden_path + path_ending + "/";
+		if (fs::exists(p) && fs::is_directory(p)) {
+			current_path = current_path + path_ending + "\\";
+			hidden_path = hidden_path + path_ending + "/";
+		}
+		else {
+			cout << "No such directory.\n";
+		}
 	}
 	else {
 		current_path = "C:\\";
