@@ -50,20 +50,25 @@ void printPath() {
 }
 
 int input_to_case(string input) {
-	if (input.find("help") != -1) {
+	string first_word = split(input, ' ')[0];
+	short word_count = split(input, ' ').size();
+	if (first_word == "help" && word_count == 1) {
 		return 0;
 	}
-	else if (input.find("ls") != -1) {
+	else if (first_word == "ls" && word_count == 1) {
 		return 1;
 	}
-	else if (input.find("cd..") != -1) {
+	else if (first_word == "cd.." && word_count == 1) {
 		return 2;
 	}
-	else if (input.find("mkdir") != -1) {
+	else if (first_word == "mkdir" && word_count > 1) {
 		return 3;
 	}
-	else if (input.find("cd") != -1) {
+	else if (first_word == "cd") {
 		return 4;
+	}
+	else {
+		return -1;
 	}
 }
 
@@ -126,6 +131,8 @@ int main() {
 		printPath();
 		getline(cin, userinput);
 		switch (input_to_case(userinput)) {
+			case -1: cout << '"' + userinput + '"' + " is not a valid command.\n";
+				break;
 			case 0: cout << "\nFunkciok:" <<
 				"\n-ls\t\tAz aktualis konyvtar tartalmanak kilistazasa." <<
 				"\n-cd\t\tRoot mappaba lepes." <<
