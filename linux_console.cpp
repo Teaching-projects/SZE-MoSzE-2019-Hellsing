@@ -67,6 +67,16 @@ int input_to_case(string input) {
 	}
 }
 
+bool all_dots(string userinput) {
+	bool alldots = true;
+	for (int i = 0; i < userinput.length(); i++) {
+		if (userinput[i] != '.' && userinput[i]!=' ') {
+			alldots = false;
+		}
+	}
+	return alldots;
+}
+
 //actual console commands
 void ls_function() {
 	for (const auto& entry : std::experimental::filesystem::directory_iterator(current_path)) {
@@ -78,7 +88,7 @@ void cd_function(string userinput) {
 	string path_ending = getInputFolderName(userinput);
 	if (path_ending != "") {
 		fs::path p(current_path + path_ending);
-		if (fs::exists(p) && fs::is_directory(p)) {
+		if (fs::exists(p) && fs::is_directory(p) && !all_dots(path_ending)) {
 			current_path = current_path + path_ending + "\\";
 			hidden_path = hidden_path + path_ending + "/";
 		}
