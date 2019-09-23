@@ -109,11 +109,18 @@ void cd_function(string userinput) {
 
 void cd_back_function(string userinput) {
 	vector<string> splitted_path = split(hidden_path, '/');
-	current_path = "";
-	hidden_path = "";
-	for (int i = 0; i < splitted_path.size() - 1; i++) {
-		current_path += splitted_path[i] + "\\";
-		hidden_path += splitted_path[i] + "/";
+	if (splitted_path.size() > 1) {
+		current_path = "";
+		hidden_path = "";
+		for (int i = 0; i < splitted_path.size() - 1; i++) {
+			current_path += splitted_path[i] + "\\";
+			hidden_path += splitted_path[i] + "/";
+		}
+	}
+	else {
+		current_path = "C:\\";
+		hidden_path = "C:/";
+		cout << "No such directory.\n";
 	}
 }
 
