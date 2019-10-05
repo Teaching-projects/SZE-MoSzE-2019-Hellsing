@@ -119,7 +119,7 @@ void cd_function(string userinput) {
 	}
 }
 
-void cd_back_function(string userinput) {
+void cd_back_function() {
 	vector<string> splitted_path = split(hidden_path, '/');
 	if (splitted_path.size() > 1) {
 		current_path = "";
@@ -128,6 +128,9 @@ void cd_back_function(string userinput) {
 			current_path += splitted_path[i] + "\\";
 			hidden_path += splitted_path[i] + "/";
 		}
+	}
+	else {
+		cout << "No such directory." << endl;
 	}
 }
 
@@ -198,7 +201,7 @@ int main() {
 			break;
 		case 1: ls_function();
 			break;
-		case 2: cd_back_function(userinput);
+		case 2: cd_back_function();
 			break;
 		case 3: mkdir_function(userinput);
 			break;
