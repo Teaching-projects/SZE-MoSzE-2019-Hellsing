@@ -2,6 +2,7 @@
 #include <string>
 #include <filesystem>
 #include <vector>
+#include <fstream>
 using namespace std;
 namespace fs = std::experimental::filesystem;
 
@@ -74,6 +75,9 @@ int input_to_case(string input) {
 		else if (word_count > 1){
 			return 6;
 		}
+	}
+	else if (first_word == "touch" && word_count > 1) {
+		return 7;
 	}
 	else {
 		return -1;
@@ -165,6 +169,14 @@ void rm_rf_function(string userinput) {
 	}
 }
 
+void touch_function(string userinput) {
+	try {
+		ofstream file;
+		file.open(current_path + getInputFolderName(userinput));
+		file.close();
+	}
+	catch (exception ex) {}
+}
 //main
 int main() {
 	string userinput = " ";
@@ -174,14 +186,15 @@ int main() {
 		switch (input_to_case(userinput)) {
 		case -1: cout << '"' + userinput + '"' + " is not a valid command." << endl;
 			break;
-		case 0: cout << endl << 
+		case 0: cout << endl <<
 			"Funkciok:" << endl <<
-			"-ls\t\tKilistazza az aktualis konyvtar tartalmat." << endl <<
-			"-cd 'utvonal'\tMappak kozott leptetes." << endl <<
-			"-cd..\t\tVisszalepes." << endl <<
-			"-mkdir\t\tMappa letrehozasa." << endl <<
-			"-rm\t\tObjektum törlése (kivéve mappa);" << endl <<
-			"-rm -rf\tObjektum törlése";
+			"-ls\t\t\tAktualis konyvtar tartalmanak kilistazasa." << endl <<
+			"-cd 'utvonal'\t\tMappak kozott leptetes." << endl <<
+			"-cd..\t\t\tVisszalepes." << endl <<
+			"-mkdir 'mappanev'\tMappa letrehozasa." << endl <<
+			"-rm 'utvonal'\t\tObjektum torlese (kiveve mappa);" << endl <<
+			"-rm -rf 'utvonal'\tObjektum (rekurziv) torlese" << endl <<
+			"-touch 'fajlnev'\tFajl letrehozasa." << endl;
 			break;
 		case 1: ls_function();
 			break;
@@ -194,6 +207,8 @@ int main() {
 		case 5: rm_rf_function(userinput);
 			break;
 		case 6: rm_function(userinput);
+			break;
+		case 7: touch_function(userinput);
 			break;
 		}
 	}
