@@ -58,7 +58,7 @@ int input_to_case(string input) {
 	else if (first_word == "ls" && word_count == 1) {
 		return 1;
 	}
-	else if (first_word == "cd.." && word_count == 1) {
+	else if (input == "cd ..") {
 		return 2;
 	}
 	else if (first_word == "mkdir" && word_count > 1) {
