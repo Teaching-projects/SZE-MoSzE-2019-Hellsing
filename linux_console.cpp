@@ -33,10 +33,10 @@ vector<string> split(string input, char separator) {
 	return return_value;
 }
 
-string getInputFolderName(string userinput) {
+string getInputFolderName(string userinput, int start = 1) {
 	string path_ending = "";
 	vector<string> splitted_input = split(userinput, ' ');
-	for (int i = 1; i < splitted_input.size(); i++) {
+	for (int i = start; i < splitted_input.size(); i++) {
 		path_ending += splitted_input[i];
 		if (i != splitted_input.size() - 1) {
 			path_ending += " ";
@@ -51,11 +51,11 @@ void printPath() {
 
 int input_to_case(string input) {
 	string first_word = split(input, ' ')[0];
-	short word_count = split(input, ' ').size();
+	int word_count = split(input, ' ').size();
 	if (first_word == "help" && word_count == 1) {
 		return 0;
 	}
-	else if (first_word == "ls" && word_count == 1) {
+	else if (input == "ls") {
 		return 1;
 	}
 	else if (input == "cd ..") {
@@ -67,6 +67,14 @@ int input_to_case(string input) {
 	else if (first_word == "cd") {
 		return 4;
 	}
+	else if (first_word == "rm") {
+		if (split(input, ' ')[1] == "-rf" && word_count > 2) {
+			return 5;
+		}
+		else if (word_count > 1){
+			return 6;
+		}
+	}
 	else {
 		return -1;
 	}
@@ -75,7 +83,7 @@ int input_to_case(string input) {
 bool all_dots(string userinput) {
 	bool alldots = true;
 	for (int i = 0; i < userinput.length(); i++) {
-		if (userinput[i] != '.' && userinput[i]!=' ') {
+		if (userinput[i] != '.' && userinput[i] != ' ') {
 			alldots = false;
 		}
 	}
@@ -85,7 +93,7 @@ bool all_dots(string userinput) {
 //actual console commands
 void ls_function() {
 	for (const auto& entry : std::experimental::filesystem::directory_iterator(current_path)) {
-		cout << entry.path() << "\n";
+		cout << entry.path() << endl;
 	}
 }
 
@@ -94,11 +102,11 @@ void cd_function(string userinput) {
 	if (path_ending != "") {
 		fs::path p(current_path + path_ending);
 		if (fs::exists(p) && fs::is_directory(p) && !all_dots(path_ending)) {
-			current_path = current_path + path_ending + "\\";
-			hidden_path = hidden_path + path_ending + "/";
+			current_path += path_ending + "\\";
+			hidden_path += path_ending + "/";
 		}
 		else {
-			cout << "No such directory.\n";
+			cout << "No such directory." << endl;
 		}
 	}
 	else {
@@ -117,11 +125,6 @@ void cd_back_function(string userinput) {
 			hidden_path += splitted_path[i] + "/";
 		}
 	}
-	else {
-		current_path = "C:\\";
-		hidden_path = "C:/";
-		cout << "No such directory.\n";
-	}
 }
 
 void mkdir_function(string userinput) {
@@ -131,6 +134,37 @@ void mkdir_function(string userinput) {
 	catch (exception ex) {}
 }
 
+void rm_function(string userinput) {
+	string path_ending = getInputFolderName(userinput);
+	fs::path p(current_path + path_ending);
+	if (fs::exists(p) && !(fs::is_directory(p))) {
+		try {
+			fs::remove(p);
+		}
+		catch (exception ex) {}
+	}
+	else if (!(fs::exists(p))) {
+		cout << "No such directory." << endl;
+	}
+	else {
+		cout << "rm: cannot remove '" + path_ending + "': Is a directory" << endl;
+	}
+}
+
+void rm_rf_function(string userinput) {
+	string path_ending = getInputFolderName(userinput, 2);
+	fs::path p(current_path + path_ending);
+	if (fs::exists(p)) {
+		try {
+			fs::remove_all(p);
+		}
+		catch (exception ex) {}
+	}
+	else {
+		cout << "No such directory." << endl;
+	}
+}
+
 //main
 int main() {
 	string userinput = " ";
@@ -138,24 +172,29 @@ int main() {
 		printPath();
 		getline(cin, userinput);
 		switch (input_to_case(userinput)) {
-			case -1: cout << '"' + userinput + '"' + " is not a valid command.\n";
-				break;
-			case 0: cout << "\nFunkciok:" <<
-				"\n-ls\t\tAz aktualis konyvtar tartalmanak kilistazasa." <<
-				"\n-cd\t\tRoot mappaba lepes." <<
-				"\n-cd 'mappa neve'\tAlmappaba lepes." <<
-				"\n-cd..\t\tSzulomappaba lepes." <<
-				"\n-mkdir\t\tMappa letrehozasa.\n";
-				break;
-			case 1: ls_function();
-				break;
-			case 2: cd_back_function(userinput);
-				break;
-			case 3: mkdir_function(userinput);
-				break;
-			case 4: cd_function(userinput);
-				break;
+		case -1: cout << '"' + userinput + '"' + " is not a valid command." << endl;
+			break;
+		case 0: cout << endl << 
+			"Funkciok:" << endl <<
+			"-ls\t\tKilistazza az aktualis konyvtar tartalmat." << endl <<
+			"-cd 'utvonal'\tMappak kozott leptetes." << endl <<
+			"-cd..\t\tVisszalepes." << endl <<
+			"-mkdir\t\tMappa letrehozasa." << endl <<
+			"-rm\t\tObjektum törlése (kivéve mappa);" << endl <<
+			"-rm -rf\tObjektum törlése";
+			break;
+		case 1: ls_function();
+			break;
+		case 2: cd_back_function(userinput);
+			break;
+		case 3: mkdir_function(userinput);
+			break;
+		case 4: cd_function(userinput);
+			break;
+		case 5: rm_rf_function(userinput);
+			break;
+		case 6: rm_function(userinput);
+			break;
 		}
 	}
-}
 }
